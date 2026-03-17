@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WW3 Alliance League</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --dark:    #1A1A2E;
+    --mid:     #16213E;
+    --accent:  #0F3460;
+    --tierA:   #1D9E75;
+    --tierAT:  #E1F5EE;
+    --tierB:   #185FA5;
+    --tierBT:  #E6F1FB;
+    --tierC:   #BA7517;
+    --tierCT:  #FAEEDA;
+    --green:   #1D9E75;
+    --red:     #E24B4A;
+    --gold:    #BA7517;
+    --silver:  #888780;
+    --bronze:  #854F0B;
+    --purple:  #534AB7;
+    --bg:      #F4F6FB;
+    --card:    #FFFFFF;
+    --border:  #E2E8F0;
+    --text:    #1A1A2E;
+    --muted:   #64748B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--accent) 100%);
+    padding: 20px 24px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .header-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+
+  .header-subtitle {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 2px;
+  }
+
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .tab.active { color: #fff; background: var(--bg); color: var(--accent); font-weight: 600; }
+
+  /* CONTENT */
+  .content { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .stat-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .table-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .search-box {
+    margin-left: auto;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    width: 180px;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  th:nth-child(2) { text-align: left; padding-left: 16px; }
+
+  td {
+    padding: 9px 8px;
+    font-size: 13px;
+    text-align: center;
+    border-bottom: 1px solid #F1F5F9;
+    color: var(--text);
+  }
+
+  td:nth-child(2) { text-align: left; padding-left: 16px; font-weight: 500; }
+
+  tr:hover td { background: #F8FAFF; }
+
+  .tier-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  .tier-A { background: var(--tierA); color: var(--tierAT); }
+  .tier-B { background: var(--tierB); color: var(--tierBT); }
+  .tier-C { background: var(--tierC); color: var(--tierCT); }
+
+  .new-badge {
+    display: inline-block;
+    background: var(--purple);
+    color: #EEEDFE;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 5px;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+  }
+
+  .elo-up   { color: var(--green); font-weight: 600; }
+  .elo-down { color: var(--red);   font-weight: 600; }
+  .elo-same { color: var(--muted); }
+
+  .rank-1 { color: var(--gold);   font-weight: 700; font-size: 15px; }
+  .rank-2 { color: var(--silver); font-weight: 700; }
+  .rank-3 { color: var(--bronze); font-weight: 700; }
+
+  /* MATCH FORM */
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  select, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.2s;
+  }
+
+  select:focus, input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,52,96,0.3); }
+  .btn-danger  { background: #A32D2D; color: #FCEBEB; }
+  .btn-danger:hover { background: #791F1F; }
+  .btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .result-card {
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .result-card.winner { background: #F0FFF4; border: 1.5px solid var(--green); }
+  .result-card.loser  { background: #FFF0F0; border: 1.5px solid var(--red); }
+
+  .result-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .result-label.winner { color: var(--green); }
+  .result-label.loser  { color: var(--red); }
+
+  .result-name { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+
+  .result-elo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  .result-elo.winner { color: var(--green); }
+  .result-elo.loser  { color: var(--red); }
+
+  .result-old { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .info-box {
+    background: #EEF2FF;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #333399;
+    font-style: italic;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  /* HISTORY */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .badge-w { background: #EAF3DE; color: #27500A; }
+  .badge-l { background: #FCEBEB; color: #501313; }
+
+  .no-data {
+    text-align: center;
+    color: var(--muted);
+    padding: 48px;
+    font-size: 14px;
+  }
+
+  /* MANAGE */
+  .add-row {
+    display: grid;
+    grid-template-columns: 1fr 120px auto;
+    gap: 10px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  /* NOTICE */
+  .notice {
+    background: #FFF9E6;
+    border: 1px solid #F39C12;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-row  { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: 1fr; }
+    .content { padding: 16px; }
+    .tab { padding: 8px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">🏆 WW3 ALLIANCE LEAGUE</div>
+      <div class="header-subtitle">Internal Elo Ranking System</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('ranking',this)">📊 Ranking</div>
+    <div class="tab" onclick="showTab('match',this)">⚔️ Enter Match</div>
+    <div class="tab" onclick="showTab('preview',this)">🔮 Elo Preview</div>
+    <div class="tab" onclick="showTab('history',this)">📋 History</div>
+    <div class="tab" onclick="showTab('manage',this)">⚙️ Manage</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- RANKING -->
+  <div class="panel active" id="panel-ranking">
+    <div class="stat-grid" id="stat-grid"></div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('A',this)">🟢 Tier A</button>
+        <button class="filter-btn" onclick="setFilter('B',this)">🔵 Tier B</button>
+        <button class="filter-btn" onclick="setFilter('C',this)">🟡 Tier C</button>
+        <input class="search-box" type="text" placeholder="🔍 Search alliance..." oninput="renderRanking()" id="search-box">
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:46px">#</th>
+            <th style="text-align:left;padding-left:16px">Alliance</th>
+            <th>Start Elo</th>
+            <th>Current Elo</th>
+            <th>Tier</th>
+            <th>✅ W</th>
+            <th>❌ L</th>
+            <th>Win %</th>
+            <th>+/-</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MATCH -->
+  <div class="panel" id="panel-match">
+    <div class="card">
+      <div class="card-title">⚔️ Record a Match Result</div>
+      <div class="form-row">
+        <div>
+          <label>🏆 Winner Alliance</label>
+          <select id="match-winner" onchange="refreshMatchPreview()"></select>
+        </div>
+        <div>
+          <label>💀 Loser Alliance</label>
+          <select id="match-loser" onchange="refreshMatchPreview()"></select>
+        </div>
+      </div>
+      <div id="match-preview"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-primary" onclick="confirmMatch()">✅ Confirm Match</button>
+        <button class="btn btn-ghost" onclick="refreshMatchPreview()">🔄 Refresh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="panel" id="panel-preview">
+    <div class="card">
+      <div class="card-title">🔮 Simulate a Matchup</div>
+      <div class="form-row">
+        <div>
+          <label>Alliance A</label>
+          <select id="prev-a" onchange="updatePreview()"></select>
+        </div>
+        <div>
+          <label>Alliance B</label>
+          <select id="prev-b" onchange="updatePreview()"></select>
+        </div>
+      </div>
+      <div id="preview-output"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="panel" id="panel-history">
+    <div class="notice">📝 Matches are saved locally in your browser. They persist as long as you use the same browser and don't clear site data.</div>
+    <div class="table-wrap">
+      <div id="history-content"></div>
+    </div>
+  </div>
+
+  <!-- MANAGE -->
+  <div class="panel" id="panel-manage">
+    <div class="card">
+      <div class="section-title">➕ Add Alliance</div>
+      <div class="add-row">
+        <div>
+          <label>Alliance Name</label>
+          <input type="text" id="new-name" placeholder="Alliance name..." />
+        </div>
+        <div>
+          <label>Start Elo</label>
+          <input type="number" id="new-elo" value="900" />
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="addAlliance()" style="width:100%">Add</button>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:8px">🗑️ Remove Alliance</div>
+      <div style="display:flex;gap:10px;margin-bottom:24px;">
+        <select id="remove-select" style="flex:1"></select>
+        <button class="btn btn-danger" onclick="removeAlliance()">Remove</button>
+      </div>
+
+      <div class="section-title">⚠️ Reset</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-danger" onclick="resetMatches()">Reset all Elo to start values</button>
+        <button class="btn btn-danger" onclick="clearHistory()">Clear match history</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── INITIAL DATA ─────────────────────────────────────────────
+var DEFAULT_ALLIANCES = [
+  {name:"Romanian Virtual Army",startElo:1148,isNew:false},
+  {name:"Pop Army",startElo:1144,isNew:false},
+  {name:"Pantheon",startElo:1139,isNew:false},
+  {name:"Noob Luck",startElo:1129,isNew:false},
+  {name:"Saksocu",startElo:1108,isNew:false},
+  {name:"Win With Style",startElo:1107,isNew:false},
+  {name:"Alpha Team",startElo:1104,isNew:false},
+  {name:"Arabic Empire",startElo:1100,isNew:false},
+  {name:"Rednecks with Guns",startElo:1094,isNew:false},
+  {name:"Vernichterwaffen",startElo:1092,isNew:false},
+  {name:"Intermarium",startElo:1079,isNew:false},
+  {name:"Aegis Elite",startElo:1078,isNew:false},
+  {name:"Kukamunga Cracka Killas",startElo:1062,isNew:false},
+  {name:"Stealth Storm Society",startElo:1046,isNew:false},
+  {name:"TheFreedomFighters",startElo:1041,isNew:false},
+  {name:"Death on Demand",startElo:1040,isNew:false},
+  {name:"The Rainmen",startElo:1039,isNew:false},
+  {name:"Alpha Wolves",startElo:1034,isNew:false},
+  {name:"The Ghost of the Night",startElo:1024,isNew:false},
+  {name:"United Arab Kingdom",startElo:1019,isNew:false},
+  {name:"Vallhalla's Elite",startElo:1008,isNew:false},
+  {name:"Med Alliance Competitive Team",startElo:992,isNew:false},
+  {name:"Tombstone Knights",startElo:990,isNew:false},
+  {name:"Strike Force Alliance",startElo:983,isNew:true},
+  {name:"Combat Brotherhood",startElo:976,isNew:false},
+  {name:"Ukranian Army - Warriors of Light",startElo:974,isNew:false},
+  {name:"Hawks LHS",startElo:969,isNew:false},
+  {name:"Frontline Fighters",startElo:962,isNew:false},
+  {name:"Knightz Templarz",startElo:962,isNew:false},
+  {name:"Win or Die",startElo:948,isNew:false},
+  {name:"Primeiro Imperio",startElo:947,isNew:false},
+  {name:"arb elite",startElo:945,isNew:false},
+  {name:"Les Roquettes Marmottes",startElo:945,isNew:false},
+  {name:"Iron Imperium",startElo:935,isNew:false},
+  {name:"Gorgonites",startElo:930,isNew:false},
+  {name:"Phantom Brigade",startElo:926,isNew:true},
+  {name:"The Pestilence Elite",startElo:916,isNew:false},
+  {name:"New International Coalition of Kickass",startElo:913,isNew:false},
+  {name:"Competito",startElo:871,isNew:true},
+  {name:"International Freedom Fighters",startElo:870,isNew:true},
+  {name:"The Aurora Group",startElo:869,isNew:false},
+  {name:"Wolfs E-sport",startElo:868,isNew:true},
+  {name:"Carnivores",startElo:867,isNew:false},
+  {name:"Raiders CON",startElo:866,isNew:false},
+  {name:"Strike Force Elite",startElo:863,isNew:true},
+  {name:"The Disavowed",startElo:853,isNew:false},
+  {name:"BWARE",startElo:850,isNew:true},
+  {name:"The Lethal Narwhals",startElo:845,isNew:true},
+  {name:"Invictus Imperium",startElo:843,isNew:true},
+  {name:"Wolf Company",startElo:839,isNew:false},
+];
+
+// ─── STATE (persisted in localStorage) ───────────────────────
+function loadState() {
+  try {
+    var saved = localStorage.getItem('ww3_alliances');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return DEFAULT_ALLIANCES.map(function(a) {
+    return {name:a.name, startElo:a.startElo, elo:a.startElo, wins:0, losses:0, isNew:a.isNew};
+  });
+}
+
+function loadHistory() {
+  try {
+    var saved = localStorage.getItem('ww3_matchHistory');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return [];
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('ww3_alliances', JSON.stringify(alliances));
+    localStorage.setItem('ww3_matchHistory',   JSON.stringify(matchHistory));
+  } catch(e) {}
+}
+
+var alliances = loadState();
+var matchHistory = loadHistory();
+var currentFilter = 'all';
+
+// ─── HELPERS ─────────────────────────────────────────────────
+function getTier(elo) { return elo>=1100?'A':elo>=1000?'B':'C'; }
+
+function calcEloChange(eloW, eloL) {
+  var diff = Math.abs(eloW - eloL);
+  var K = diff > 150 ? (eloW > eloL ? 10 : 25) : 15;
+  return Math.round(K * (1 - 1/(1+Math.pow(10,(eloL-eloW)/400))));
+}
+
+function winProb(a, b) { return Math.round(100/(1+Math.pow(10,(b-a)/400))); }
+
+function kLabel(eloW, eloL) {
+  var diff = Math.abs(eloW-eloL);
+  if (diff>150) return eloW>eloL ? '10 — favourite wins' : '25 — underdog wins! 🔥';
+  return '15 — even match';
+}
+
+function sorted() { return [...alliances].sort((a,b)=>b.elo-a.elo); }
+
+function tierBadge(elo) {
+  var t = getTier(elo);
+  return '<span class="tier-badge tier-'+t+'">'+t+'</span>';
+}
+
+// ─── TABS ────────────────────────────────────────────────────
+function showTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='ranking') renderRanking();
+  if(id==='match')   renderMatchSelects();
+  if(id==='preview') renderPreviewSelects();
+  if(id==='history') renderHistory();
+  if(id==='manage')  renderManage();
+}
+
+// ─── RANKING ─────────────────────────────────────────────────
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRanking();
+}
+
+function renderRanking() {
+  var s = sorted();
+  var tA = s.filter(a=>getTier(a.elo)==='A').length;
+  var tB = s.filter(a=>getTier(a.elo)==='B').length;
+  var tC = s.filter(a=>getTier(a.elo)==='C').length;
+
+  document.getElementById('stat-grid').innerHTML =
+    statCard(alliances.length, 'Total Alliances', '#1A1A2E') +
+    statCard(tA, '🟢 Tier A (1100+)', '#1D9E75') +
+    statCard(tB, '🔵 Tier B (1000–1099)', '#185FA5') +
+    statCard(tC, '🟡 Tier C (<1000)', '#BA7517');
+
+  var query = (document.getElementById('search-box').value||'').toLowerCase();
+  var filtered = s.filter(function(a) {
+    if (currentFilter !== 'all' && getTier(a.elo) !== currentFilter) return false;
+    if (query && !a.name.toLowerCase().includes(query)) return false;
+    return true;
+  });
+
+  document.getElementById('ranking-body').innerHTML = filtered.map(function(a) {
+    var rank = s.indexOf(a)+1;
+    var rankClass = rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'';
+    var rankIcon  = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
+    var total = a.wins+a.losses;
+    var wr = total ? Math.round(a.wins/total*100)+'%' : '—';
+    var diff = a.elo-a.startElo;
+    var diffHtml = diff===0?'<span class="elo-same">—</span>':diff>0?'<span class="elo-up">+'+diff+'</span>':'<span class="elo-down">'+diff+'</span>';
+    return '<tr>'+
+      '<td class="'+rankClass+'">'+rankIcon+'</td>'+
+      '<td>'+a.name+(a.isNew?'<span class="new-badge">NEW</span>':'')+'</td>'+
+      '<td style="color:#AAA">'+a.startElo+'</td>'+
+      '<td style="font-weight:700;font-size:14px">'+a.elo+'</td>'+
+      '<td>'+tierBadge(a.elo)+'</td>'+
+      '<td class="elo-up">'+a.wins+'</td>'+
+      '<td class="elo-down">'+a.losses+'</td>'+
+      '<td>'+wr+'</td>'+
+      '<td>'+diffHtml+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function statCard(val, lbl, color) {
+  return '<div class="stat-card"><div class="stat-val" style="color:'+color+'">'+val+'</div><div class="stat-lbl">'+lbl+'</div></div>';
+}
+
+// ─── MATCH ───────────────────────────────────────────────────
+function populateSelect(id, excludeName) {
+  var sel = document.getElementById(id);
+  var cur = sel.value;
+  sel.innerHTML = sorted().filter(a=>a.name!==excludeName).map(function(a) {
+    return '<option value="'+a.name+'">'+a.name+' ('+a.elo+')</option>';
+  }).join('');
+  if (cur && [...sel.options].find(o=>o.value===cur)) sel.value=cur;
+}
+
+function renderMatchSelects() {
+  populateSelect('match-winner');
+  populateSelect('match-loser');
+  // Default loser to second alliance so they're never the same
+  var loserSel = document.getElementById('match-loser');
+  if (loserSel.options.length > 1) loserSel.selectedIndex = 1;
+  document.getElementById('match-winner').addEventListener('change', refreshMatchPreview);
+  document.getElementById('match-loser').addEventListener('change', refreshMatchPreview);
+  refreshMatchPreview();
+}
+
+function refreshMatchPreview() {
+  var wN = document.getElementById('match-winner').value;
+  var lN = document.getElementById('match-loser').value;
+  if (!wN||!lN||wN===lN) {
+    document.getElementById('match-preview').innerHTML='<p style="color:var(--muted);font-size:13px;margin-top:8px">Select two different alliances.</p>';
+    return;
+  }
+  var w = alliances.find(a=>a.name===wN);
+  var l = alliances.find(a=>a.name===lN);
+  var ch = calcEloChange(w.elo,l.elo);
+  var prob = winProb(w.elo,l.elo);
+  document.getElementById('match-preview').innerHTML =
+    '<div class="result-grid">'+
+      '<div class="result-card winner">'+
+        '<div class="result-label winner">🏆 Winner</div>'+
+        '<div class="result-name">'+w.name+'</div>'+
+        '<div class="result-elo winner">'+( w.elo+ch)+'</div>'+
+        '<div class="result-old">'+w.elo+' → <b>+'+ ch+'</b> &nbsp;|&nbsp; Win prob: '+prob+'%</div>'+
+      '</div>'+
+      '<div class="result-card loser">'+
+        '<div class="result-label loser">💀 Loser</div>'+
+        '<div class="result-name">'+l.name+'</div>'+
+        '<div class="result-elo loser">'+(l.elo-ch)+'</div>'+
+        '<div class="result-old">'+l.elo+' → <b>-'+ch+'</b></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="info-box">🎯 K-Factor: '+kLabel(w.elo,l.elo)+'</div>';
+}
+
+function confirmMatch() {
+  var wN = document.getElementById('match-winner').value;
+  var lN = document.getElementById('match-loser').value;
+  if (!wN||!lN||wN===lN) { showNotif('⚠️ Select two different alliances!', 'warn'); return; }
+  var w = alliances.find(a=>a.name===wN);
+  var l = alliances.find(a=>a.name===lN);
+  var ch = calcEloChange(w.elo,l.elo);
+  var date = new Date().toLocaleDateString('en-GB');
+  matchHistory.unshift({date,winner:wN,loser:lN,winnerElo:w.elo,loserElo:l.elo,change:ch});
+  w.elo+=ch; w.wins++;
+  l.elo-=ch; l.losses++;
+  saveState();
+  showNotif('✅ Match recorded! ' + wN + ' +'+ch+' → '+w.elo + '  |  ' + lN + ' -'+ch+' → '+l.elo, 'success');
+  // Switch to Ranking tab and refresh it so changes are visible immediately
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-ranking').classList.add('active');
+  document.querySelectorAll('.tab')[0].classList.add('active');
+  renderRanking();
+}
+
+// ─── PREVIEW ─────────────────────────────────────────────────
+function renderPreviewSelects() {
+  populateSelect('prev-a');
+  populateSelect('prev-b');
+  if(document.getElementById('prev-b').options.length>1) document.getElementById('prev-b').selectedIndex=1;
+  updatePreview();
+}
+
+function updatePreview() {
+  var aN = document.getElementById('prev-a').value;
+  var bN = document.getElementById('prev-b').value;
+  if (!aN||!bN||aN===bN) {
+    document.getElementById('preview-output').innerHTML='<p style="color:var(--muted);font-size:13px;margin-top:8px">Select two different alliances.</p>';
+    return;
+  }
+  var a = alliances.find(x=>x.name===aN);
+  var b = alliances.find(x=>x.name===bN);
+  var chA = calcEloChange(a.elo,b.elo);
+  var chB = calcEloChange(b.elo,a.elo);
+  var pA  = winProb(a.elo,b.elo);
+  document.getElementById('preview-output').innerHTML =
+    '<div class="info-box" style="margin-bottom:12px">📊 Win probability — '+a.name+': <b>'+pA+'%</b> &nbsp;|&nbsp; '+b.name+': <b>'+(100-pA)+'%</b></div>'+
+    '<p style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">If '+a.name+' wins</p>'+
+    '<div class="result-grid" style="margin-bottom:16px">'+
+      '<div class="result-card winner"><div class="result-label winner">🏆 Winner</div><div class="result-name">'+a.name+'</div><div class="result-elo winner">'+(a.elo+chA)+'</div><div class="result-old">'+a.elo+' → +'+chA+'</div></div>'+
+      '<div class="result-card loser"><div class="result-label loser">💀 Loser</div><div class="result-name">'+b.name+'</div><div class="result-elo loser">'+(b.elo-chA)+'</div><div class="result-old">'+b.elo+' → -'+chA+'</div></div>'+
+    '</div>'+
+    '<p style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">If '+b.name+' wins</p>'+
+    '<div class="result-grid">'+
+      '<div class="result-card winner"><div class="result-label winner">🏆 Winner</div><div class="result-name">'+b.name+'</div><div class="result-elo winner">'+(b.elo+chB)+'</div><div class="result-old">'+b.elo+' → +'+chB+'</div></div>'+
+      '<div class="result-card loser"><div class="result-label loser">💀 Loser</div><div class="result-name">'+a.name+'</div><div class="result-elo loser">'+(a.elo-chB)+'</div><div class="result-old">'+a.elo+' → -'+chB+'</div></div>'+
+    '</div>';
+}
+
+// ─── HISTORY ─────────────────────────────────────────────────
+function renderHistory() {
+  if (!matchHistory.length) {
+    document.getElementById('history-content').innerHTML = '<div class="no-data">📋 No matches recorded yet.</div>';
+    return;
+  }
+  document.getElementById('history-content').innerHTML =
+    '<table>'+
+    '<thead><tr><th>#</th><th style="text-align:left;padding-left:16px">📅 Date</th><th style="text-align:left;padding-left:16px">🏆 Winner</th><th style="text-align:left;padding-left:16px">💀 Loser</th><th>Elo ±</th></tr></thead>'+
+    '<tbody>'+matchHistory.map(function(m,i) {
+      return '<tr>'+
+        '<td style="color:var(--muted)">'+(matchHistory.length-i)+'</td>'+
+        '<td style="text-align:left;padding-left:16px;color:var(--muted)">'+m.date+'</td>'+
+        '<td style="text-align:left;padding-left:16px"><span class="badge badge-w">W</span> '+m.winner+' <span style="color:var(--muted);font-size:11px">('+m.winnerElo+')</span></td>'+
+        '<td style="text-align:left;padding-left:16px"><span class="badge badge-l">L</span> '+m.loser+' <span style="color:var(--muted);font-size:11px">('+m.loserElo+')</span></td>'+
+        '<td><span class="elo-up">+'+m.change+'</span> / <span class="elo-down">-'+m.change+'</span></td>'+
+      '</tr>';
+    }).join('')+
+    '</tbody></table>';
+}
+
+// ─── MANAGE ──────────────────────────────────────────────────
+function renderManage() {
+  var sel = document.getElementById('remove-select');
+  sel.innerHTML = sorted().map(a=>'<option value="'+a.name+'">'+a.name+' ('+a.elo+')</option>').join('');
+}
+
+function addAlliance() {
+  var name = document.getElementById('new-name').value.trim();
+  var elo  = parseInt(document.getElementById('new-elo').value)||900;
+  if (!name) { showNotif('⚠️ Enter a name!', 'warn'); return; }
+  if (alliances.find(a=>a.name===name)) { showNotif('⚠️ Alliance already exists!', 'warn'); return; }
+  alliances.push({name,startElo:elo,elo,wins:0,losses:0,isNew:true});
+  saveState();
+  document.getElementById('new-name').value='';
+  renderManage();
+  showNotif('✅ ' + name + ' added with Elo ' + elo, 'success');
+}
+
+function removeAlliance() {
+  var name = document.getElementById('remove-select').value;
+  if (!name) return;
+  if (!confirm('Remove '+name+'?')) return;
+  alliances = alliances.filter(a=>a.name!==name);
+  saveState();
+  renderManage();
+  showNotif('✅ ' + name + ' removed.', 'success');
+}
+
+function resetMatches() {
+  if (!confirm('Reset all Elo to starting values?')) return;
+  alliances.forEach(a=>{a.elo=a.startElo;a.wins=0;a.losses=0;});
+  saveState();
+  renderRanking();
+  showNotif('✅ All Elo reset to start values.', 'success');
+}
+
+function clearHistory() {
+  if (!confirm('Clear all match history?')) return;
+  matchHistory = [];
+  saveState();
+  showNotif('✅ History cleared.', 'success');
+}
+
+// ─── NOTIFICATION ────────────────────────────────────────────
+function showNotif(msg, type) {
+  var existing = document.getElementById('notif-bar');
+  if (existing) existing.remove();
+  var bar = document.createElement('div');
+  bar.id = 'notif-bar';
+  bar.textContent = msg;
+  bar.style.cssText = [
+    'position:fixed','bottom:24px','left:50%','transform:translateX(-50%)',
+    'padding:12px 24px','border-radius:10px','font-size:14px','font-weight:600',
+    'font-family:Inter,sans-serif','z-index:9999','box-shadow:0 4px 20px rgba(0,0,0,0.2)',
+    'transition:opacity 0.4s','max-width:90vw','text-align:center',
+    type==='success'?'background:#1D9E75;color:#E1F5EE':'background:#E24B4A;color:#fff'
+  ].join(';');
+  document.body.appendChild(bar);
+  setTimeout(function(){ bar.style.opacity='0'; setTimeout(function(){ bar.remove(); },400); }, 3000);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+renderRanking();
+</script>
+</body>
+</html>
